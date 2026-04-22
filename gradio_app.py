@@ -13,35 +13,20 @@ from pipeline.detector import detect_persons
 from pipeline.scorer import compute_scores, PULSE_COLOUR
 from pipeline.visualizer import annotate_frame, build_signal_chart, build_gauge
 
-
 # ---------------------------------------------------------------------------
-# Paths
+# Sample image
 # ---------------------------------------------------------------------------
 
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
-SAMPLE_PATH = DATA_DIR / "sample_classroom.jpg"
+_DATA_DIR = Path(__file__).resolve().parent / "data"
+SAMPLE_PATH = _DATA_DIR / "sample_classroom.jpg"
 
-
-# ---------------------------------------------------------------------------
-# Sample image check
-# ---------------------------------------------------------------------------
 
 def _ensure_sample() -> None:
-    """
-    Ensure the bundled sample image exists.
-
-    This replaces the old logic that tried to import:
-        from data.make_sample import create_sample_classroom
-
-    On Streamlit Cloud, that import caused a crash when the module did not exist.
-    """
     if SAMPLE_PATH.exists():
         return
-
     raise FileNotFoundError(
-        f"Missing sample image: {SAMPLE_PATH}\n"
-        "Please add data/sample_classroom.jpg to your GitHub repo."
+        f"Missing sample image: {SAMPLE_PATH}. "
+        "Please make sure data/sample_classroom.jpg exists."
     )
 
 
@@ -57,22 +42,16 @@ def analyze(
     """
     Run the full engagement pipeline on a PIL classroom image.
 
-    Parameters
-    ----------
-    pil_image     : RGB PIL Image from upload widget, or None.
-    expected_size : Instructor-supplied expected class size.
-    demo_mode     : If True, analyse the bundled sample image instead.
-
     Returns
     -------
     annotated_rgb : np.ndarray
         RGB annotated frame (faces blurred)
-    metrics_html  : str
+    metrics_html : str
         HTML KPI summary + legend + footer
-    signal_chart  : plt.Figure
-        Per-signal bar chart
-    gauge_fig     : plt.Figure
-        Class-pulse semicircular gauge
+    signal_chart : plt.Figure
+        per-signal bar chart
+    gauge_fig : plt.Figure
+        class-pulse semicircular gauge
     """
     if demo_mode or pil_image is None:
         try:
@@ -103,7 +82,7 @@ def analyze(
 
 
 # ---------------------------------------------------------------------------
-# Styling
+# CSS
 # ---------------------------------------------------------------------------
 
 _PAGE_CSS = """
@@ -181,6 +160,7 @@ _SMALL_CARD = (
     "box-shadow: 0 2px 10px rgba(0,0,0,0.09); "
     "border: 1.5px solid {border};"
 )
+
 _PULSE_CARD = (
     "display:inline-flex; flex-direction:column; align-items:center; "
     "background:#fff; border-radius:14px; padding:16px 26px; "
@@ -217,6 +197,7 @@ def _metrics_html(s: dict, is_demo: bool = False) -> str:
             "Turn demo mode off and upload a real photo for live analysis."
             "</div>"
         )
+
     if s["low_attendance"]:
         banners += (
             "<div style='background:#fdecea; border:1px solid #e74c3c; "
@@ -267,11 +248,11 @@ def _metrics_html(s: dict, is_demo: bool = False) -> str:
     det_border = "#2980b9"
 
     small_cards = (
-        _small_card("👥", "Detected", str(s["detected"]), det_border) +
-        _small_card("📋", "Attendance", f"{att_rate:.0%}", att_border) +
-        _small_card("✅", "Engaged", str(s["engaged_count"]), eng_border) +
-        _small_card("➡️", "Neutral", str(s["neutral_count"]), neu_border) +
-        _small_card("❌", "Disengaged", str(s["disengaged_count"]), dis_border)
+        _small_card("👥", "Detected", str(s["detected"]), det_border)
+        + _small_card("📋", "Attendance", f"{att_rate:.0%}", att_border)
+        + _small_card("✅", "Engaged", str(s["engaged_count"]), eng_border)
+        + _small_card("➡️", "Neutral", str(s["neutral_count"]), neu_border)
+        + _small_card("❌", "Disengaged", str(s["disengaged_count"]), dis_border)
     )
 
     cards_row = (
