@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import cv2
@@ -349,7 +348,7 @@ _HOW_IT_WORKS = """
 | 5a | **Head pose** | Face aspect ratio + Haar eye-symmetry ratio |
 | 5b | **Posture** | Body-box h/w ratio (tall-narrow = upright) |
 | 5c | **Hand raise** | Skin-colour blob in region above face |
-| 5d | **Phone use** | Bright rectangle in lap region (−20 % penalty) |
+| 5d | **Phone use** | Bright rectangle in lap region (-20% penalty) |
 | 5e | **Talking** | Two faces side-by-side at same height |
 
 ### Engagement score per student
